@@ -10,7 +10,6 @@
 <!-- Open Graph -->
 <meta property="og:title" content="ROSEC — Roses from Ecuador, direct to North American trade" />
 <meta property="og:description" content="Premium wholesale roses from Ecuador's high-altitude farms, direct to florists, wedding designers and wholesalers across North America. Launching 2026." />
-<meta property="og:image" content="https://rosec.ca/assets/rose-bloom-poster.png" />
 <meta property="og:url" content="https://rosec.ca" />
 <meta property="og:type" content="website" />
 
@@ -18,8 +17,6 @@
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="ROSEC — Roses from Ecuador, direct to North American trade" />
 <meta name="twitter:description" content="Premium wholesale roses from Ecuador's high-altitude farms, direct to florists, wedding designers and wholesalers across North America. Launching 2026." />
-<meta name="twitter:image" content="https://rosec.ca/assets/rose-bloom-poster.png" />
-
 <link rel="icon" type="image/svg+xml" href="assets/hummingbird.svg" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -65,9 +62,7 @@
   }
   .bg-poster{
     position:absolute; inset:0;
-    background-image:url('assets/rose-bloom-poster.png');
-    background-size:cover;
-    background-position:center;
+    background:var(--ink);
     z-index:0;
   }
   .bg-overlay{
@@ -283,16 +278,13 @@
 
   <!--
     BACKGROUND VIDEO
-    Assets shipped in /assets/:
-      • rose-bloom.mp4         (~3 MB, H.264, looping rose-bloom timelapse)
-      • rose-bloom-poster.png  (poster fallback, 652×502)
+      • rose-bloom.mp4 (~3 MB, H.264 cinematic timelapse)
     Autoplay requires muted + playsinline on iOS Safari.
-    The inline script HEAD-checks both URLs and degrades silently to ink.
+    Underlay is solid ink (var(--ink)); no poster while loading.
   -->
   <div class="bg-poster" aria-hidden="true"></div>
   <video class="bg-video" autoplay loop muted playsinline preload="metadata"
-         aria-hidden="true" data-src="assets/rose-bloom.mp4"
-         data-poster="assets/rose-bloom-poster.png"></video>
+         aria-hidden="true" data-src="assets/rose-bloom.mp4"></video>
   <div class="bg-overlay" aria-hidden="true"></div>
 
   <div class="content">
@@ -406,26 +398,15 @@
     });
   })();
 
-  // Attach video + poster only if the assets exist (avoids 404 noise pre-deploy).
+  // Attach video only if the asset exists (avoids 404 noise pre-deploy).
   (function(){
     var v = document.querySelector('.bg-video');
-    var bgPoster = document.querySelector('.bg-poster');
     if (!v) return;
-    var posterUrl = v.getAttribute('data-poster');
-    var srcUrl    = v.getAttribute('data-src');
+    var srcUrl = v.getAttribute('data-src');
 
     function head(url){
       return fetch(url, { method: 'HEAD' }).then(function(r){ return r.ok; }).catch(function(){ return false; });
     }
-
-    head(posterUrl).then(function(ok){
-      if (ok) {
-        v.setAttribute('poster', posterUrl);
-        if (bgPoster) bgPoster.style.backgroundImage = 'url(' + posterUrl + ')';
-      } else if (bgPoster) {
-        bgPoster.style.backgroundImage = 'none';
-      }
-    });
 
     head(srcUrl).then(function(ok){
       if (!ok) return; // leave video empty; ink-black background covers
